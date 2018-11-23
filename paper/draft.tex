@@ -6,7 +6,8 @@
 \usepackage{amsmath,amssymb,natbib,latexsym,times}
 \usepackage{graphics}
 \usepackage{todonotes,multirow,enumitem}
-
+\usepackage{array}   
+\usepackage{breqn}
 
 \title{Simply disenblending}
 \date{\today}
@@ -42,12 +43,13 @@ The ensemble average in the case of a single source is:
 <e_s> = \int_0^{z_s} p(z'_s) R \frac{\Sigma (z_{\ell})}{\Sigma_{cr}(z_{\ell},z'_s)} dz'_s.
 \end{equation}
 We need now to consider the case where the observed image is a blend of two galaxies, where we assume the two galaxies 1 and 2 are independent: 
-\begin{equation}
-<e_B> = \int \int dz'_{s_1} dz'_{s_2} p(z_{s_1})p(z_{s_2}) \Sigma(z_{\ell}) 
-[H(z'_{s_1}) + H(z'_{s_2})] 
-[ R_1 \int_0^{z'_{s_1}} \frac{dz''_{s_1}}{\Sigma_{cr}(z''_{s_1},z_{\ell})} 
+\begin{multline}
+<e_B>  = \int \int dz'_{s_1} dz'_{s_2} p(z_{s_1})p(z_{s_2}) \Sigma(z_{\ell}) \\
+\times [H(z'_{s_1}) + H(z'_{s_2})]  \\
+\times [ R_1 \int_0^{z'_{s_1}} \frac{dz''_{s_1}}{\Sigma_{cr}(z''_{s_1},z_{\ell})} 
 + R_2 \int_{z'_{s_1}}^{z'_{s_2}} \frac{dz''_{s_2}}{\Sigma_{cr}(z''_{s_2},z_{\ell})}  ]
-\end{equation}
+\label{eq:ellblend}
+\end{multline}
 
 
 The ensemble average for the total ellipticity of a source galaxy is: 
@@ -56,15 +58,19 @@ The ensemble average for the total ellipticity of a source galaxy is:
 \end{equation}
 where $p_B$ is the probability to be a blend. 
 
-
-Assuming it easily translates to the efficiency (redshift distribution to be dirac function basically gives e), we have: 
+The lensing kernel for a galaxy is written as: 
 \begin{equation}
-g = (1 - p_B) g_s + p_B  \int \int d\chi' d\chi'' p'(\chi')p''(\chi'')  
-[ R_1  \frac{f_k (\chi' - \chi)}{f_k (\chi')} 
+g(\chi) = \int d\chi' p(\chi') \frac{f_K(\chi' - \chi)}{f_K(\chi')}
+\end{equation}
+
+Assuming equation \ref{eq:ellblend} easily translates to the efficiency (redshift distribution to be dirac function basically gives e), we have: 
+\begin{multline}
+g = (1 - p_B) g_s + p_B  \int \int d\chi' d\chi'' p'(\chi')p''(\chi'')  \\
+\times [ R_1  \frac{f_k (\chi' - \chi)}{f_k (\chi')} 
 + R_2 \frac{f_k (\chi'' - \chi)}{f_k (\chi'')}   ] 
 = (1 - p_B) g_s + p_B g_B
-\end{equation}
-(to rederive - I am not sure about subscript and primes.)
+\end{multline}
+(to rederive)
 
 Now, the convergence power spectrum is written as:
 \begin{equation}
@@ -72,21 +78,22 @@ P_K^{ij}(\ell) \propto \int_0^{\chi} g_i(\chi') g_j(\chi') P_{\delta} (\frac{\el
 \end{equation}
 
 When we include the case of a blend, we end up with: 
-\begin{equation}
-P_K^{ij}(\ell) =  (1 - p_B)^2 P_{K}^{i_s j_s}(\ell)  + (1 - p_B) p_B  P_{K}^{i_s j_B}(\ell) + (1 - p_B) p_B  P_{K}^{i_B j_s}(\ell)
-\end{equation}
-The term in $p_B^2$ is expected to be negligible. 
+\begin{multline}
+P_K^{ij}(\ell) =  (1 - p_B)^2 P_{K}^{i_s j_s}(\ell)  + (1 - p_B) p_B  P_{K}^{i_s j_B}(\ell) \\
++ (1 - p_B) p_B  P_{K}^{i_B j_s}(\ell) + p_B ^2 P_{K}^{i_B j_B}(\ell) 
+\end{multline}
+where the subscript $s$ stands for a single galaxy and $B$ for blended sources. 
 
 Let's get the expression of e.g. $P_{K}^{i_s j_B}(\ell)$ (similar for $P_{K}^{i_B j_s}(\ell)$) is:
-\begin{equation}
-P_K^{i_sj_B}(\ell) \propto \int_0^{\chi} g_{i_S}(\chi''') \int_{\chi}^{\infty} \int_{\chi}^{\infty} d\chi' d\chi'' p'_j(\chi')p''_j(\chi'')  
+\begin{multline}
+P_K^{i_sj_B}(\ell) \propto \int_0^{\chi} g_{i_S}(\chi''') \int_{\chi}^{\infty} \int_{\chi}^{\infty} d\chi' d\chi'' p'_j(\chi')p''_j(\chi'')  \\
 [ R_1  \frac{f_k (\chi' - \chi''')}{f_k (\chi')} 
 + R_2 \frac{f_k (\chi'' - \chi''')}{f_k (\chi'')}   ]   P_{\delta} (\frac{\ell}{f_k},\chi''') d\chi'''
-\end{equation}
+\end{multline}
 
 In DES we consider an additive bias in the photometric redshift distributions: $p(z)$ becomes $p(z+b)$, with b the bias, marginalised on. 
 
-Plots of the lensing kernels to see that delta photoz cannot match delta blend. Problem is the integral so try to interpolate the lensing kernel bit and use mesh grid for inegral. 
+Plots of the lensing kernels to see that delta photoz cannot match delta blend. Problem is the integral so try to interpolate the lensing kernel bit and use mesh grid for inregral. 
 
 
 
