@@ -80,15 +80,27 @@ def g_kernel_blend(zl,zmax=3,ngrid=1000,R1 = 0.7,R2 = 0.3):
         second_integral = np.trapz(first_integral,x=zgrid)
         return second_integral
 
+def main(argv):
+    z = np.linspace(0,2.5,100)
+    gg = g_kernel(z)
+    gb = g_kernel_blend(z)
 
-z = np.linspace(0,2.5,100)
-gg = g_kernel(z)
-gb = g_kernel_blend(z)
+    plt.plot(z,gg/np.max(gg),label='single source')
+    plt.plot(z,gb/np.max(gb),label='2 blend sources')
+    plt.plot(z,pz(z)/np.max(pz(z)),label='redshift distribution')
+    plt.xlabel('z')
+    plt.ylabel('lensing kernel')
+    plt.legend()
+    plt.show()
+    plt.savefig('lensing_kernels.png')
 
-plt.plot(z,gg,label='single source')
-plt.plot(z,gb,label='2 blend sources')
-plt.plot(z,pz(z),label='redshift distribution')
-plt.xlabel('z')
-plt.ylabel('lensing kernel')
-plt.legend()
-plt.show()
+
+ 
+if __name__ == "__main__":
+    import pdb, traceback, sys
+    try:
+        main(sys.argv)
+    except:
+        thingtype, value, tb = sys.exc_info()
+        traceback.print_exc()
+        pdb.post_mortem(tb)
