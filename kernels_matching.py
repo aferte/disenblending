@@ -55,16 +55,18 @@ def g_kernel_blend(zl,zmax=3,ngrid=1000,R1 = 0.7,R2 = 0.3):
         for i,zli in enumerate(zl):
             zbgrid1,zbgrid2 = np.meshgrid(zgrid,zgrid)
             '''lensing kernel for each galaxy for redshift of kernel evaluation. Array of size the integrand'''
-            sigcrit_inv_1 = lensing_kernel(zli,zbgrid1[0,:])
-            sigcrit_inv_1 = np.ones(zbgrid1.shape)*sigcrit_inv_1
+            sigcrit_inv_1 = lensing_kernel(zli,zbgrid1[0,zbgrid1[0,:]>zli])
+            sigcrit_inv_1 = np.ones((len(zbgrid1[0,zbgrid1[0,:]>zli]),len(zbgrid1[0,zbgrid1[0,:]>zli])))*sigcrit_inv_1
 
-            sigcrit_inv_2 = lensing_kernel(zli,zbgrid2[:,0])
-            sigcrit_inv_2 = np.transpose(sigcrit_inv_2*np.ones(zbgrid2.shape))
+            sigcrit_inv_2 = lensing_kernel(zli,zbgrid2[zbgrid2[:,0]>zli,0])
+            sigcrit_inv_2 = np.transpose(np.ones((len(zbgrid2[zbgrid2[:,0]>zli,0]),len(zbgrid2[zbgrid2[:,0]>zli,0])))*sigcrit_inv_2)
 
-            integrand = pz1_integrand * pz2_integrand * (R1 * sigcrit_inv_1 + R2 * sigcrit_inv_2)
+            integrand = pz1_integrand[zbgrid1[0,:]>zli] * pz2_integrand[zbgrid2[:,0]>zli] * (R1 * sigcrit_inv_1 + R2 * sigcrit_inv_2)
             
-            first_integral = np.trapz(integrand,x = zbgrid2,axis=0)
-            second_integral = np.trapz(first_integral,x=zgrid)
+            first_integral = np.trapz(integrand,x = zbgrid2[zbgrid2[:,0]>zli,:len(zbgrid2[zbgrid2[:,0]>zli,0])],axis=0)
+            second_integral = np.trapz(first_integral,x=zgrid[zgrid>zli])
+            # first_integral = quad(integrand)
+            # second_integral = quad(first_integral)
             result[i] = second_integral
         return result
     else:
@@ -77,65 +79,6 @@ def g_kernel_blend(zl,zmax=3,ngrid=1000,R1 = 0.7,R2 = 0.3):
         first_integral = np.trapz(integrand,x = zbgrid2,axis=0)
         second_integral = np.trapz(first_integral,x=zgrid)
         return second_integral
-
-
-def test_subkernel(zl,zmax=3,ngrid=1000,R1 = 0.7,R2 = 0.3):
-    '''integral of the lensing kernel for 2 blended galaxies'''
-
-    '''z to ingrate on'''
-    zgrid = np.linspace(0,zmax,ngrid)    
-    if len(zl)>1:
-        first_integral = []
-        '''redshift distribution for each galaxy'''
-        pz1_integrand = pz(zgrid) 
-        pz2_integrand = pz(zgrid)
-        for i,zli in enumerate(zl):
-            zbgrid1,zbgrid2 = np.meshgrid(zgrid,zgrid)
-            '''lensing kernel for each galaxy for redshift of kernel evaluation. Array of size the integrand'''
-            sigcrit_inv_1 = lensing_kernel(zli,zbgrid1[0,:])
-            sigcrit_inv_1 = np.ones(zbgrid1.shape)*sigcrit_inv_1
-
-            sigcrit_inv_2 = lensing_kernel(zli,zbgrid2[:,0])
-            sigcrit_inv_2 = np.transpose(sigcrit_inv_2*np.ones(zbgrid2.shape))
-
-            integrand = pz1_integrand * pz2_integrand * (R1 * sigcrit_inv_1 + R2 * sigcrit_inv_2)
-            first_integral.append(np.trapz(integrand,x = zbgrid2,axis=0))
-        return first_integral
-    else:
-        zbgrid1,zbgrid2 = np.meshgrid(zgrid,zgrid)
-        pz1_integrand = pz(zbgrid1)
-        sigcrit_inv_1 = lensing_kernel(zl,zbgrid1[0,:])
-        sigcrit_inv_1 = np.ones(zbgrid1.shape)*sigcrit_inv_1
-        
-        pz2_integrand = pz(zbgrid2)
-        sigcrit_inv_2 = lensing_kernel(zl,zbgrid2[:,0])
-        sigcrit_inv_2 = np.transpose(sigcrit_inv_2*np.ones(zbgrid2.shape))
-        
-        integrand = pz1_integrand * pz2_integrand * (R1 * sigcrit_inv_1 + R2 * sigcrit_inv_2)
-        first_integral = np.trapz(integrand,x = zbgrid2,axis=0)
-        return sigcrit_inv_1,sigcrit_inv_2 , first_integral
-
-# def int_lensing_kernel(z,z_source,z_start,z_end):
-#     int_lensing_kernel = quad(lensing_kernel,z_start,z_end,args=())
-#     return int_lensing_kernel
-
-# def kernel_total(z,z1,z2):
-#     kernel_total = redshift_distrib(z)*redshift_distrib(z)*[R1*lensing_kernel(z,z1) * R2*rlensing_kernel(z,z2)]*cosmo.e_func()/H0
-#     return kernel_total
-
-# g_blend_total = []
-# for i in range(len(z)):
-#     g_blend_total[i] = quad ( lambda z_source2: redshift_distrib(z)*quad( lambda z_source1: redshift_distrib(z)* (R1*lensing_kernel(z,z_source1)  + R2*lensing_kernel(z,z_source2))  ,z_start,10 ),z_start,10)
-
-
-sigcrit_inv_1, sigcrit_inv_2, first_integral = test_subkernel([2])
-zgrid = np.linspace(0,3,1000) 
-plt.plot(zgrid,first_integral,label='first integral')
-plt.legend()
-plt.xlabel('z')
-plt.show()
-
-
 
 
 z = np.linspace(0,2.5,100)
