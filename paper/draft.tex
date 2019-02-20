@@ -29,8 +29,18 @@
 \section{Method}
 \label{sec:method}
 
+TO DO: we consider 1 z bin
+- rederive the modified lensing kernel
+- impact on shear: R1, R2 as nuisance parameters.
+gamma = R1 g1+ R2/R1 g2
+<gamma gamma> = <gamma_single gamma_single > + 2f_b <gamma blend gamma single > + f_b^2 <gamma blend gamma blend>.
+vary f_b, R1, R2. 
+- Impact of clustering ? (rewrite corr function in term of conditional proba can help understand) 
 
-Note: all of this assume blending of 2 galaxies and that the foreground galaxy of the blend is not 'opaque' (flux is sum of the two fluxes) 
+--> Goal: give requirement on R1, R2 and fb for the deblender. Give prior. 
+
+
+Note: all of this assume blending of 2 galaxies and that the foreground galaxy of the tblend is not 'opaque' (flux is sum of the two fluxes) 
 
 The ellipticity $e_s$ of a sheared galaxy is: 
 \begin{equation}
